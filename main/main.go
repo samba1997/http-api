@@ -3,6 +3,13 @@ package main
 import "fmt"
 import "net/http"
 import "io/ioutil"
+import "encoding/json"
+import "github.com/osamingo/checkdigit"
+
+type UidDetails struct{
+	Uid string           `json:"uid"`
+	
+}
 func main(){
 	fmt.Println("server creation")
 
@@ -21,7 +28,14 @@ func hello(w http.ResponseWriter, req *http.Request){
 	fmt.Println("Request Received!")
 
 	body,_ := ioutil.ReadAll(req.Body)
-	responseString := "Hello, "+ string(body)
+	uidDetails := UidDetails{}
+	_= json.Unmarshal(body,&uidDetails)
+	v := checkdigit.NewVerhoeff()
+	responseString:="No"
+	if v.Verify(uidDetails.Uid)
+	{
+	responseString = "Yes"
+	}
 
 	w.Write([]byte(responseString))
 }
